@@ -1,0 +1,35 @@
+{
+  "name": "loginapp",
+  "version": "1.0.0",
+  "description": "Simple authentication system",
+  "main": "./bin/www",
+  "scripts": {
+    "start": "node ./bin/www",
+    "dev": "nodemon ./bin/www"
+  },
+  "author": "Pranab Kumar Padhy",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "*",
+    "body-parser": "*",
+    "connect-flash": "*",
+    "cookie-parser": "*",
+    "cors": "*",
+    "debug": "*",
+    "express": "*",
+    "express-handlebars": "*",
+    "express-messages": "*",
+    "express-session": "*",
+    "express-validator": "*",
+    "mongodb": "*",
+    "mongoose": "*",
+    "morgan": "*",
+    "passport": "*",
+    "passport-http": "*",
+    "passport-local": "*",
+    "passport-google-oauth2": "*"
+  },
+  "devDependencies": {
+    "nodemon": "*"
+  }
+}
