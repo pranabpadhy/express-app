@@ -1,6 +1,7 @@
 $(document).ready(function () {
 	$('input').each(function () {
-		$(this).attr('disabled', 'disabled');
+		$(this).attr('readonly', 'true');
+		$(this).addClass('disabled');
 	});
 	$('input:password').hide();
 	$('.ID').hide();
@@ -17,6 +18,7 @@ $(document).ready(function () {
 		success: function (res) {
 			if(!res.result) $('#details').html(res);
 			else {
+				console.log(res.result);
 				res.result.forEach(function (user) {
 					if(userData.includes(user.email)) {
 						$('#ID').val(user._id);
@@ -26,9 +28,9 @@ $(document).ready(function () {
 					}
 				});
 				if($('#username').val() == "") {
-					$('#edit').html('Create Account on Login App');
-					$('form').action('/users/register');
-					$('button').html('Register');
+					$('#username').hide();
+					$('.username').hide();
+					$('#edit >a').html('Create Account on Login App');
 				}
 				$('#edit').on('click', editDetails);
 				$('#delete').on('click', deleteAccount);
@@ -42,12 +44,19 @@ var editDetails = function () {
 	$('button').show();
 	$('#cancel').show();
 	$('#infoemail').show();
+	$('#username').show();
+	$('.username').show();
 	$('.pwd').show();
 	$('input:password').show();
+	if($('#username').val() == "") $('button').html('Register');
 	$('input').each(function () {
-		if(this.name != 'email') $(this).removeAttr('disabled');
+		if(this.name != 'email') {
+			$(this).removeAttr('readonly');
+			$(this).removeClass('disabled');
+		}
 		if(this.name == 'username' && $(this).val()) {
-			$(this).attr('disabled', 'disabled');
+			$(this).attr('readonly', 'true');
+			$(this).addClass('disabled');
 			$('#infouser').show();
 		}
 	});
@@ -60,7 +69,7 @@ var deleteAccount = function () {
 		type: 'DELETE',
 		url: '/users/delete/'+id,
 		success: function (res) {
-			if(res.result.ok == 1) window.location.href = '/users/logout';
+			if(res.result.ok == 1) window.location.href = '/logout';
 			else window.location.href = '/';
 		}
 	});

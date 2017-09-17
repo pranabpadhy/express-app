@@ -13,8 +13,7 @@ var userSchema = mongoose.Schema({
 var user = module.exports = mongoose.model("Users", userSchema);
 
 module.exports.getUsersAPI = function (data, callback) {
-	var filter = (data) ? data.body : {};
-	user.find(filter, function (error, users) {
+	user.find({}, function (error, users) {
 		if(error) return callback(error, null);
 		else return callback(null, users);
 	});

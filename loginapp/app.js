@@ -93,7 +93,7 @@ app.use(function (req, res, next) {
 });
 
 // Using routes
-app.use('/', routes);
+app.use(routes);
 app.use('/users', users);
 app.use('/google', google);
 

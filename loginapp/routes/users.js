@@ -4,6 +4,7 @@ var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 
 var User = require('../database/user');
+var googleUser = require('../database/googleUser');
 
 // Register User
 router.post('/register', function(req, res){
@@ -80,15 +81,17 @@ router.post('/update', function(req, res){
 			password: password
 		});
 
-		User.updateUser(newUser, function(err, result){
-			console.log("router log: ", err, result);
-			if(err) {
-				req.flash('error', err);
-				res.redirect('/');
-			} else {
-				req.flash('success_msg', 'Your account is updated.');
-				res.redirect(307, '/users/login');
-			}
+		googleUser.deleteUser(email, function(del_err, del_result){
+			User.updateUser(newUser, function(err, result){
+				console.log("router log: ", err, result);
+				if(err) {
+					req.flash('error', err);
+					res.redirect('/');
+				} else {
+					req.flash('success_msg', 'Your account is updated.');
+					res.redirect('/');
+				}
+			});
 		});
 	}
 });
@@ -100,7 +103,7 @@ router.delete('/delete/:id', function(req, res){
 	User.deleteUser(id, function(err, result){
 		console.log(err, result.result);
 		if(err) req.flash('error', err);
-		else req.flash('success_msg', 'Your account is updated.');
+		else req.flash('success_msg', 'Your account is deleted.');
 		res.json({'error':err, 'result':result.result});
 	});
 });

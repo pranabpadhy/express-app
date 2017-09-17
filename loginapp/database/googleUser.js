@@ -43,3 +43,7 @@ module.exports.findOrCreate = function(profile, atoken, rtoken, cb) {
 module.exports.findById = function(id, cb) {
     googleUser.findOneById({ _id: id }, cb);
 };
+
+module.exports.deleteUser = function(email, callback){
+    googleUser.remove({email: email}, callback);
+};
