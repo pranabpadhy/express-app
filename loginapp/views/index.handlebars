@@ -12,13 +12,13 @@
 			<a class="nav-link" href="#">Edit Account</a>
 		<li>
 		<li id="delete" role="presentation" class="nav-item">
-			<a class="nav-link" href="#" data-id="{{user._id}}">Delete Account</a>
+			<a class="nav-link" href="#">Delete Account</a>
 		<li>
 	</ul>
 </nav><br/><br/>
 <div class="row">
 	<script type='text/javascript' src='/js/indexHelper.js'></script>
-	<div id="details" class="col-md-12" data-user="{{user}}">
+	<div id="details" class="col-md-12" data-email="{{user.email}}">
 		{{#if errors}}
 		  	{{#each errors}}
 		      	<div class="alert alert-danger">{{msg}}</div> 

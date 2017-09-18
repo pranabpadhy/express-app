@@ -23,7 +23,6 @@ router.get('/logout', function(req, res){
 });
 
 function ensureAuthenticated(req, res, next){
-	console.log("authentication:", req.isAuthenticated());
 	if(req.isAuthenticated()) return next();
 	else res.redirect('/login');
 }

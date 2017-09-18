@@ -15,7 +15,8 @@ var UserSchema = new mongoose.Schema({
 var googleUser = module.exports = mongoose.model('GoogleUsers', UserSchema);
 
 module.exports.getUsersAPI = function (data, callback) {
-	googleUser.find({}, function (error, users) {
+    var filter = (data) ? data : {};
+	googleUser.find(filter, function (error, users) {
 		if(error) return callback(error, null);
 		else return callback(null, users);
 	});

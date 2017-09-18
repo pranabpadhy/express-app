@@ -21,12 +21,12 @@ var UserSchema = mongoose.Schema({
 var User = module.exports = mongoose.model('User', UserSchema);
 
 module.exports.createUser = function(newUser, callback){
-	getUserByUsername(newUser.username, function (username_error, userName) {
+	getUser(newUser.username, function (username_error, userName) {
 		if(username_error) return callback(username_error);
 	   	if(userName){
 	   	  	return callback('username already exists');
 	   	} else {
-	   		getUserByEmail(newUser.email, function (email_error, userEmail) {
+	   		getUser(newUser.email, function (email_error, userEmail) {
 				if(email_error) return callback(email_error);
 			   	if(userEmail){
 			   	  	return callback('Email already exists');
@@ -54,22 +54,21 @@ module.exports.updateUser = function(newUser, callback){
 	        		email: newUser.email,
 	        		password: newUser.password
 	        	}
-	        }, {upsert: true}, callback);
+	        }, {upsert: true}, function (error, res) {
+	        	if(res.ok == 1) callback(null, newUser);
+	        	else if(error) callback(error);
+	        });
 	    });
 	});
 }
 
-module.exports.deleteUser = function(id, callback){
-	User.remove({_id:id}, callback);
+module.exports.deleteUser = function(email, callback){
+	User.remove({email: email}, callback);
 }
 
-var getUserByUsername = function(username, callback){
-	var query = {username: username};
-	User.findOne(query, callback);
-}
-
-var getUserByEmail = function(email, callback){
-	var query = {email: email};
+var getUser = function(user, callback){
+	console.log('User to loggin/create:', user);
+	var query = {$or:[{username: user}, {email: user}]};
 	User.findOne(query, callback);
 }
 
@@ -84,5 +83,4 @@ module.exports.comparePassword = function(candidatePassword, hash, callback){
 	});
 }
 
-module.exports.getUserByUsername = getUserByUsername;
-module.exports.getUserByEmail = getUserByEmail;
+module.exports.getUser = getUser;

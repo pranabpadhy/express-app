@@ -23,7 +23,7 @@ var db = mongoose.connection;
 
 var routes = require('./routes/router');
 var users = require('./routes/users');
-var google = require('./routes/googleUser');
+var google = require('./routes/googleUsers');
 
 // Init App
 var app = express();
@@ -50,12 +50,11 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Express Session
-app.use(cookieParser());
 app.use(session({
   key: 'express.sid',
   secret: process.env.SECRET_KEY,
   saveUninitialized: true,
-  resave: true
+  resave: true,
 }));
 
 // Passport init

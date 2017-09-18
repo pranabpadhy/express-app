@@ -1,3 +1,4 @@
+var userData = '';
 $(document).ready(function () {
 	$('input').each(function () {
 		$(this).attr('readonly', 'true');
@@ -10,27 +11,31 @@ $(document).ready(function () {
 	$('#cancel').hide();
 	$('#infouser').hide();
 	$('#infoemail').hide();
-	var userData = $('#details').data('user');
+	email = $('#details').data('email');
+	console.log('email:', email);
 	$.ajax({
 		type: 'POST',
 		url: 'http://localhost:7070/getUsers',
-		data: null,
+		data: {"email": email},
 		success: function (res) {
 			if(!res.result) $('#details').html(res);
 			else {
 				console.log(res.result);
 				res.result.forEach(function (user) {
-					if(userData.includes(user.email)) {
+					if(email == user.email) {
 						$('#ID').val(user._id);
 						$('#name').val(user.name);
 						$('#username').val(user.username);
 						$('#email').val(user.email);
+						userData = user;
 					}
 				});
 				if($('#username').val() == "") {
 					$('#username').hide();
 					$('.username').hide();
 					$('#edit >a').html('Create Account on Login App');
+					$('form').attr('action', '/users/register');
+					$('#delete').hide();
 				}
 				$('#edit').on('click', editDetails);
 				$('#delete').on('click', deleteAccount);
@@ -64,10 +69,10 @@ var editDetails = function () {
 
 var deleteAccount = function () {
 	if(!confirm('Are you sure?')) return;
-	var id = $('#delete > a').data('id');
+	var email = $('#details').data('email');
 	$.ajax({
 		type: 'DELETE',
-		url: '/users/delete/'+id,
+		url: '/users/delete/'+email,
 		success: function (res) {
 			if(res.result.ok == 1) window.location.href = '/logout';
 			else window.location.href = '/';

@@ -41,8 +41,11 @@ router.post('/register', function(req, res){
 				req.flash('error', err);
 				res.redirect('/register');
 			} else {
-				req.flash('success_msg', 'You are registered and can login with new credentials now.');
-				res.redirect('/login');
+				req.flash('success_msg', 'You are registered and loggedin with new credentials.');
+				req.body = {};
+				req.body.username = username;
+				req.body.password = password2;
+				res.redirect(307, '/users/login/callback');
 			}
 		});
 	}
@@ -80,75 +83,65 @@ router.post('/update', function(req, res){
 			username: username,
 			password: password
 		});
-
-		googleUser.deleteUser(email, function(del_err, del_result){
-			User.updateUser(newUser, function(err, result){
-				console.log("router log: ", err, result);
-				if(err) {
-					req.flash('error', err);
-					res.redirect('/');
-				} else {
-					req.flash('success_msg', 'Your account is updated.');
-					res.redirect('/');
-				}
-			});
+		
+		User.updateUser(newUser, function(err, result){
+			if(err) {
+				req.flash('error', err);
+				res.redirect('/');
+			} else {
+				req.flash('success_msg', 'Your account is updated.');
+				req.body = {};
+				req.body.username = username;
+				req.body.password = password2;
+				res.redirect(307, '/users/login/callback');
+			}
 		});
 	}
 });
 
 // Delete User
-router.delete('/delete/:id', function(req, res){
-	var id = req.params.id;
+router.delete('/delete/:email', function(req, res){
+	var email = req.params.email;
 
-	User.deleteUser(id, function(err, result){
-		console.log(err, result.result);
+	User.deleteUser(email, function(err, result){
 		if(err) req.flash('error', err);
 		else req.flash('success_msg', 'Your account is deleted.');
-		res.json({'error':err, 'result':result.result});
+		res.json({'error': err, 'result':result.result});
 	});
+});
+
+// For Session
+passport.serializeUser(function(user, done) {
+	done(null, user);
+});
+
+passport.deserializeUser(function(user, done) {
+	if(user.access_token) googleUser.getUserById(user._id, done);
+	else User.getUserById(user._id, done);
 });
 
 passport.use(new LocalStrategy({
 	callbackURL: 'http://localhost:8080/users/login/callback'
-}, function(usernameOrEmail, password, done) {
-  	User.getUserByUsername(usernameOrEmail, function(err, userbyusername){
-   		if(err || !userbyusername) {
-	   	 	User.getUserByEmail(usernameOrEmail, function(err, userbyemail){
-	   			if(err || !userbyemail) return done(err, false, {message: 'Unknown User'});
-	   	  		else {
-	   	  	  		User.comparePassword(password, userbyemail.password, function(err, isMatch){
-			   			if(isMatch) return done(null, userbyemail);
-			   			else return done(err, false, {message: 'Invalid password'});
-			   		});
-	   	  		}
-	   	  	});
-   		} else {
-			User.comparePassword(password, userbyusername.password, function(err, isMatch){
-   	  			if(isMatch) return done(null, userbyusername);
+}, function(user, password, done) {
+  	User.getUser(user, function(err, user){
+   		if(err || !user) return done(err, false, {message: 'Unknown User'});
+   		else {
+			User.comparePassword(password, user.password, function(err, isMatch){
+   	  			if(isMatch) return done(null, user);
    	  			else return done(err, false, {message: 'Invalid password'});
    			});
 		}
   	});
 }));
 
-// For Session
-passport.serializeUser(function(user, done) {
-  	done(null, user);
-});
-
-passport.deserializeUser(function(id, done) {
-  	User.getUserById(id, function(err, user) {
-    	done(err, user);
-  	});
-});
-
 // Login User
 router.post('/login/callback', passport.authenticate('local', {
-	successRedirect:'/',
 	failureRedirect:'/login',
 	failureFlash: true
 }), function(req, res) {
-	res.redirect('/');
+	req.session.save(function () {
+    	res.redirect('/');
+  	});
 });
 
 module.exports = router;

@@ -40,8 +40,8 @@ module.exports.findOrCreate = function(profile, atoken, rtoken, cb) {
     });
 };
 
-module.exports.findById = function(id, cb) {
-    googleUser.findOneById({ _id: id }, cb);
+module.exports.getUserById = function(id, cb) {
+    googleUser.findById(id, cb);
 };
 
 module.exports.deleteUser = function(email, callback){
