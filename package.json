@@ -11,6 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "bcryptjs": "*",
+    "bluebird": "*",
     "body-parser": "*",
     "connect-flash": "*",
     "cookie-parser": "*",
@@ -21,6 +22,7 @@
     "express-messages": "*",
     "express-session": "*",
     "express-validator": "*",
+    "googleapis": "*",
     "mongodb": "*",
     "mongoose": "*",
     "morgan": "*",
